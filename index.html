@@ -1,327 +1,243 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Bally's Live Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tahoe DOR Dashboard</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      background: #000;
-      color: #fff;
       font-family: Arial, sans-serif;
-      padding: 0;
+      background: #1a1a2e;
+      color: #eee;
+      padding: 20px;
     }
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 24px;
-      border-bottom: 2px solid #cc0000;
-      background: #000;
-    }
-    .logo-area {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-    .logo-area img {
-      height: 48px;
-    }
-    .logo-area h1 {
-      color: #cc0000;
-      font-size: 1.8rem;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-    }
-    #last-updated {
-      color: #aaa;
-      font-size: 0.85rem;
-    }
-    main {
-      padding: 20px 24px;
-    }
-    .section-title {
-      color: #cc0000;
-      font-size: 1rem;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      border-left: 4px solid #cc0000;
-      padding-left: 10px;
-      margin-bottom: 14px;
-      margin-top: 24px;
-    }
-    /* STOCK */
-    .stock-bar {
-      background: #111;
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 16px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .stock-left {
-      display: flex;
-      align-items: center;
-      gap: 24px;
-    }
-    .stock-symbol {
-      font-size: 1.4rem;
-      font-weight: bold;
+    h1 {
+      text-align: center;
+      font-size: 2em;
+      margin-bottom: 20px;
       color: #fff;
+      letter-spacing: 2px;
     }
-    .stock-price {
-      font-size: 1.4rem;
-      font-weight: bold;
-      color: #fff;
+    h2 {
+      font-size: 1.1em;
+      margin-bottom: 12px;
+      color: #aad4f5;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 1px solid #2a2a4a;
+      padding-bottom: 6px;
     }
-    .stock-change.positive { color: #00cc44; font-size: 1.1rem; font-weight: bold; }
-    .stock-change.negative { color: #cc0000; font-size: 1.1rem; font-weight: bold; }
-    .stock-time { color: #888; font-size: 0.8rem; }
-    /* WEATHER GRID */
+    .section { margin-bottom: 30px; }
+
+    /* WEATHER */
     .weather-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 14px;
     }
     .weather-card {
-      background: #111;
-      border: 1px solid #333;
-      border-radius: 8px;
+      background: #16213e;
+      border-radius: 10px;
       padding: 16px;
+      text-align: center;
+      border: 1px solid #2a2a5a;
     }
-    .weather-card .city-name {
-      color: #cc0000;
-      font-size: 0.75rem;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 8px;
+    .weather-card .city { font-size: 1em; font-weight: bold; color: #aad4f5; margin-bottom: 6px; }
+    .weather-card .temp { font-size: 2em; font-weight: bold; color: #fff; }
+    .weather-card .conditions { font-size: 0.85em; color: #ccc; margin-top: 4px; text-transform: capitalize; }
+    .weather-card .wind { font-size: 0.8em; color: #999; margin-top: 4px; }
+
+    /* STOCKS */
+    .stocks-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
     }
-    .weather-card .temp {
-      font-size: 2.2rem;
-      font-weight: bold;
-      color: #fff;
+    .stock-card {
+      background: #16213e;
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+      border: 1px solid #2a2a5a;
     }
-    .weather-card .temp span {
-      font-size: 1rem;
-      color: #aaa;
-      margin-left: 8px;
-    }
-    .weather-card .condition {
-      color: #aaa;
-      font-size: 0.85rem;
-      margin-top: 4px;
-      text-transform: capitalize;
-    }
-    /* FORECAST GRID */
+    .stock-card .symbol { font-size: 1.1em; font-weight: bold; color: #aad4f5; margin-bottom: 6px; }
+    .stock-card .price { font-size: 1.8em; font-weight: bold; color: #fff; }
+    .stock-card .change { font-size: 0.95em; margin-top: 4px; font-weight: bold; }
+    .change.positive { color: #4caf50; }
+    .change.negative { color: #f44336; }
+
+    /* FORECAST */
     .forecast-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 14px;
     }
     .forecast-card {
-      background: #111;
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 14px;
+      background: #16213e;
+      border-radius: 10px;
+      padding: 16px;
+      border: 1px solid #2a2a5a;
     }
-    .forecast-card .city-name {
-      color: #cc0000;
-      font-size: 0.75rem;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 10px;
-    }
+    .forecast-card .city { font-size: 1em; font-weight: bold; color: #aad4f5; margin-bottom: 10px; text-align: center; }
     .forecast-day {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 4px 0;
-      border-bottom: 1px solid #222;
-      font-size: 0.82rem;
+      padding: 5px 0;
+      border-bottom: 1px solid #2a2a4a;
+      font-size: 0.82em;
     }
     .forecast-day:last-child { border-bottom: none; }
-    .forecast-day .day-label { color: #aaa; width: 30px; }
-    .forecast-day .day-condition { color: #ccc; flex: 1; text-align: center; text-transform: capitalize; }
-    .forecast-day .day-temps { color: #fff; font-weight: bold; white-space: nowrap; }
-    .forecast-day .day-rain { color: #4a9eff; font-size: 0.75rem; margin-left: 6px; }
+    .forecast-day .day-label { color: #aad4f5; font-weight: bold; min-width: 40px; }
+    .forecast-day .day-temps { color: #fff; }
+    .forecast-day .day-cond { color: #ccc; text-transform: capitalize; text-align: right; flex: 1; margin: 0 6px; }
+    .forecast-day .day-precip { color: #7ec8e3; min-width: 30px; text-align: right; }
+
+    .loading { color: #666; font-style: italic; text-align: center; padding: 20px; }
+    .timestamp { text-align: center; color: #555; font-size: 0.75em; margin-top: 20px; }
   </style>
 </head>
 <body>
 
-<header>
-  <div class="logo-area">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Bally%27s_logo.svg/320px-Bally%27s_logo.svg.png" alt="Bally's Logo" />
-    <h1>Live Dashboard</h1>
+<h1>&#127944; Tahoe DOR Dashboard</h1>
+
+<!-- WEATHER SECTION -->
+<div class="section">
+  <h2>&#127783; Current Weather</h2>
+  <div class="weather-grid" id="weather-grid">
+    <div class="loading">Loading weather...</div>
   </div>
-  <div id="last-updated">Loading...</div>
-</header>
+</div>
 
-<main>
-  <div class="section-title">Stock</div>
-  <div class="stock-bar">
-    <div class="stock-left">
-      <div class="stock-symbol" id="stock-symbol">-</div>
-      <div class="stock-price" id="stock-price">-</div>
-      <div class="stock-change" id="stock-change">-</div>
-    </div>
-    <div class="stock-time" id="stock-time"></div>
+<!-- STOCKS SECTION -->
+<div class="section">
+  <h2>&#128200; Stocks</h2>
+  <div class="stocks-grid" id="stocks-grid">
+    <div class="loading">Loading stocks...</div>
   </div>
+</div>
 
-  <div class="section-title">Current Weather</div>
-  <div class="weather-grid" id="weather-grid"></div>
+<!-- FORECAST SECTION -->
+<div class="section">
+  <h2>&#128197; 5-Day Forecast</h2>
+  <div class="forecast-grid" id="forecast-grid">
+    <div class="loading">Loading forecast...</div>
+  </div>
+</div>
 
-  <div class="section-title">5-Day Forecast</div>
-  <div class="forecast-grid" id="forecast-grid"></div>
-</main>
+<div class="timestamp" id="timestamp"></div>
 
 <script>
   const SHEET_ID = "1foje84iHozCcRp0uhcoVX2T__nhjUumNFNUFxBf55Qs";
-  const API_KEY  = "AIzaSyA3HMhNVdOKKpKb3aRW2YBZFB1bQbEREJM";
+  const API_KEY = "AIzaSyD5JqGOW_HmEVBEHkxVTB_p7l99Jj8jP0c";
 
-  // Map API city names to display names (for Weather tab)
-  const CITY_NAME_MAP = {
-    "zephyr cove-round hill village": "Stateline",
-    "kingsbury": "Stateline",
-    "central city": "Black Hawk",
-    "black hawk": "Black Hawk"
+  const WEATHER_CITY_MAP = {
+    "Zephyr Cove-Round Hill Village": "Stateline",
+    "Zephyr Cove": "Stateline",
+    "Central City": "Black Hawk"
   };
 
   function mapCityName(name) {
-    if (!name) return name;
-    const lower = name.toLowerCase().trim();
-    return CITY_NAME_MAP[lower] || name;
-  }
-
-  function sheetUrl(sheetName) {
-    return `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(sheetName)}?key=${API_KEY}`;
+    return WEATHER_CITY_MAP[name] || name;
   }
 
   async function fetchSheet(sheetName) {
-    const res = await fetch(sheetUrl(sheetName), { cache: "no-store" });
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(sheetName)}?key=${API_KEY}`;
+    const res = await fetch(url);
     const data = await res.json();
     if (!data.values || data.values.length < 2) return [];
     const headers = data.values[0];
     return data.values.slice(1).map(row => {
       const obj = {};
-      headers.forEach((h, i) => { obj[h.trim()] = (row[i] || "").trim(); });
+      headers.forEach((h, i) => obj[h] = row[i] || "");
       return obj;
     });
   }
 
-  function roundTemp(val) {
-    const num = parseFloat(val);
-    return isNaN(num) ? "-" : Math.round(num);
-  }
-
-  async function loadStock() {
-    const rows = await fetchSheet("Stocks");
-    if (!rows.length) return;
-    const last = rows[rows.length - 1];
-
-    const sym    = last["symbol"] || "-";
-    const price  = last["currentPrice"] || "-";
-    const change = last["percentChange"] || "-";
-    const ts     = last["timestamp"] || "";
-
-    document.getElementById("stock-symbol").textContent = sym;
-    document.getElementById("stock-price").textContent  = price !== "-" ? `$${parseFloat(price).toFixed(2)}` : "-";
-
-    const pct = parseFloat(change);
-    const changeEl = document.getElementById("stock-change");
-    const pctDisplay = isNaN(pct) ? change : (pct >= 0 ? "+" : "") + pct.toFixed(2) + "%";
-    changeEl.textContent = pctDisplay;
-    changeEl.className   = "stock-change " + (pct >= 0 ? "positive" : "negative");
-
-    document.getElementById("stock-time").textContent = ts ? `As of ${ts}` : "";
+  function getLatest(rows, keyField) {
+    const latest = {};
+    rows.forEach(row => {
+      const key = row[keyField];
+      if (key) latest[key] = row;
+    });
+    return Object.values(latest);
   }
 
   async function loadWeather() {
     const rows = await fetchSheet("Weather");
-    if (!rows.length) return;
-
-    // Get last row per city
-    const map = {};
-    rows.forEach(row => {
-      const city = row["City"] || "";
-      if (city) map[city] = row;
-    });
-    const cities = Object.values(map);
-
+    const latest = getLatest(rows, "City");
     const grid = document.getElementById("weather-grid");
-    grid.innerHTML = "";
-    cities.forEach(row => {
-      const rawCity   = row["City"] || "Unknown";
-      const city      = mapCityName(rawCity);
-      const temp      = roundTemp(row["Temp"] || "");
-      const condition = row["Conditions"] || "";
+    if (!latest.length) { grid.innerHTML = "<div class='loading'>No data</div>"; return; }
+    grid.innerHTML = latest.map(r => {
+      const city = mapCityName(r["City"]);
+      const temp = Math.round(parseFloat(r["Temp"]));
+      const cond = r["Conditions"] || "";
+      const wind = r["Wind Speed"] ? Math.round(parseFloat(r["Wind Speed"])) + " mph" : "";
+      return `<div class="weather-card">
+        <div class="city">${city}</div>
+        <div class="temp">${temp}&deg;F</div>
+        <div class="conditions">${cond}</div>
+        <div class="wind">${wind}</div>
+      </div>`;
+    }).join("");
+  }
 
-      const card = document.createElement("div");
-      card.className = "weather-card";
-      card.innerHTML = `
-        <div class="city-name">${city}</div>
-        <div class="temp">${temp}<span>&deg;F</span></div>
-        <div class="condition">${condition}</div>
-      `;
-      grid.appendChild(card);
-    });
+  async function loadStocks() {
+    const rows = await fetchSheet("Stocks");
+    const latest = getLatest(rows, "symbol");
+    const grid = document.getElementById("stocks-grid");
+    if (!latest.length) { grid.innerHTML = "<div class='loading'>No data</div>"; return; }
+    grid.innerHTML = latest.map(r => {
+      const symbol = r["symbol"] || "";
+      const price = parseFloat(r["currentPrice"]).toFixed(2);
+      const change = parseFloat(r["percentChange"]);
+      const changeStr = (change >= 0 ? "+" : "") + change.toFixed(2) + "%";
+      const cls = change >= 0 ? "positive" : "negative";
+      return `<div class="stock-card">
+        <div class="symbol">${symbol}</div>
+        <div class="price">$${price}</div>
+        <div class="change ${cls}">${changeStr}</div>
+      </div>`;
+    }).join("");
   }
 
   async function loadForecast() {
     const rows = await fetchSheet("Forecast");
-    if (!rows.length) return;
-
-    // Get last row per city
-    const map = {};
-    rows.forEach(row => {
-      const city = row["City"] || "";
-      if (city) map[city] = row;
-    });
-    const cities = Object.values(map);
-
+    const latest = getLatest(rows, "City");
     const grid = document.getElementById("forecast-grid");
-    grid.innerHTML = "";
-
-    const dayLabels = ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5"];
-
-    cities.forEach(row => {
-      const city = row["City"] || "Unknown";
-
-      let daysHtml = dayLabels.map((day, i) => {
-        const n         = i + 1;
-        const high      = roundTemp(row[`Day ${n} High`] || "");
-        const low       = roundTemp(row[`Day ${n} Low`] || "");
-        const condition = row[`Day ${n} Conditions`] || "";
-        const rain      = row[`Day ${n} Precip`] || "";
-        const rainHtml  = rain ? `<span class="day-rain">${rain}</span>` : "";
-        return `
-          <div class="forecast-day">
-            <span class="day-label">D${n}</span>
-            <span class="day-condition">${condition}</span>
-            <span class="day-temps">${high}&deg; / ${low}&deg;</span>
-            ${rainHtml}
-          </div>`;
-      }).join("");
-
-      const card = document.createElement("div");
-      card.className = "forecast-card";
-      card.innerHTML = `<div class="city-name">${city}</div>${daysHtml}`;
-      grid.appendChild(card);
-    });
+    if (!latest.length) { grid.innerHTML = "<div class='loading'>No data</div>"; return; }
+    grid.innerHTML = latest.map(r => {
+      const city = r["City"] || "";
+      let daysHtml = "";
+      for (let d = 1; d <= 5; d++) {
+        const high = r[`Day ${d} High`] ? Math.round(parseFloat(r[`Day ${d} High`])) + "°" : "--";
+        const low  = r[`Day ${d} Low`]  ? Math.round(parseFloat(r[`Day ${d} Low`]))  + "°" : "--";
+        const cond = r[`Day ${d} Conditions`] || "--";
+        const prec = r[`Day ${d} Precip`] !== undefined && r[`Day ${d} Precip`] !== "" 
+                     ? Math.round(parseFloat(r[`Day ${d} Precip`])) + "mm" : "--";
+        daysHtml += `<div class="forecast-day">
+          <span class="day-label">Day ${d}</span>
+          <span class="day-temps">${high}/${low}</span>
+          <span class="day-cond">${cond}</span>
+          <span class="day-precip">${prec}</span>
+        </div>`;
+      }
+      return `<div class="forecast-card">
+        <div class="city">${city}</div>
+        ${daysHtml}
+      </div>`;
+    }).join("");
   }
 
-  async function refresh() {
-    document.getElementById("last-updated").textContent = "Updating...";
-    await Promise.all([loadStock(), loadWeather(), loadForecast()]);
-    document.getElementById("last-updated").textContent = "Last updated: " + new Date().toLocaleTimeString();
+  async function loadAll() {
+    await Promise.all([loadWeather(), loadStocks(), loadForecast()]);
+    document.getElementById("timestamp").textContent = "Last updated: " + new Date().toLocaleString();
   }
 
-  refresh();
-  setInterval(refresh, 5 * 60 * 1000);
+  loadAll();
+  setInterval(loadAll, 60000);
 </script>
+
 </body>
 </html>
