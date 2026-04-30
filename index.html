@@ -105,7 +105,7 @@
 
 <script>
   const SHEET_ID = "1foje84iHozCcRp0uhcoVX2T__nhjUumNFNUFxBf55Qs";
-  const API_KEY = "AIzaSyD5JqGOW_HmEVBEHkxVTB_p7l99Jj8jP0c";
+  const API_KEY = "AIzaSyCBmXNEsfATSGwFQJ-izEeARWLlFEwzoxI";
 
   const CITY_ORDER = ["Stateline", "Denver", "Black Hawk", "Henderson", "Reno", "Providence"];
 
@@ -123,17 +123,13 @@
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(sheetName)}?key=${API_KEY}`;
     const res = await fetch(url);
     const data = await res.json();
-    console.log(`--- ${sheetName} raw data:`, data);
     if (!data.values || data.values.length < 2) return [];
     const headers = data.values[0];
-    console.log(`--- ${sheetName} headers:`, headers);
-    const rows = data.values.slice(1).map(row => {
+    return data.values.slice(1).map(row => {
       const obj = {};
       headers.forEach((h, i) => obj[h] = row[i] || "");
       return obj;
     });
-    console.log(`--- ${sheetName} first row:`, rows[0]);
-    return rows;
   }
 
   function getLatest(rows, keyField) {
@@ -155,9 +151,6 @@
     const weatherMap = getLatest(weatherRows, "City");
     const forecastMap = getLatest(forecastRows, "City");
 
-    console.log("Weather map keys:", Object.keys(weatherMap));
-    console.log("Forecast map keys:", Object.keys(forecastMap));
-
     const remappedWeather = {};
     Object.keys(weatherMap).forEach(k => {
       remappedWeather[mapCityName(k)] = weatherMap[k];
@@ -168,15 +161,10 @@
       remappedForecast[mapCityName(k)] = forecastMap[k];
     });
 
-    console.log("Remapped weather keys:", Object.keys(remappedWeather));
-    console.log("Remapped forecast keys:", Object.keys(remappedForecast));
-
     const grid = document.getElementById("city-grid");
     grid.innerHTML = CITY_ORDER.map(city => {
       const w = remappedWeather[city] || {};
       const f = remappedForecast[city] || {};
-
-      console.log(`City: ${city}, weather:`, w, "forecast:", f);
 
       const temp = w["Temp"] ? Math.round(parseFloat(w["Temp"])) + "°F" : "--";
       const cond = w["Conditions"] || "--";
