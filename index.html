@@ -12,21 +12,16 @@
       color: #eee;
       padding: 20px;
     }
-
-    /* MAIN LAYOUT */
     .dashboard {
       display: grid;
       grid-template-columns: 220px 1fr;
       gap: 16px;
     }
-
-    /* LEFT COLUMN */
     .left-col {
       display: flex;
       flex-direction: column;
       gap: 16px;
     }
-
     .logo-box {
       background: #111;
       border: 2px solid #cc0000;
@@ -36,11 +31,7 @@
       align-items: center;
       justify-content: center;
     }
-    .logo-box img {
-      width: 100%;
-      max-width: 180px;
-    }
-
+    .logo-box img { width: 100%; max-width: 180px; }
     .stock-box {
       background: #111;
       border: 2px solid #cc0000;
@@ -53,16 +44,11 @@
     .stock-box .change { font-size: 1.1em; font-weight: bold; margin-top: 6px; }
     .change.positive { color: #4caf50; }
     .change.negative { color: #f44336; }
-
-    /* RIGHT COLUMN */
     .right-col {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: auto auto;
       gap: 16px;
     }
-
-    /* CITY CARDS */
     .city-card {
       background: #111;
       border: 2px solid #cc0000;
@@ -78,32 +64,10 @@
       text-transform: uppercase;
       letter-spacing: 1px;
     }
-    .city-card .temp {
-      font-size: 2.4em;
-      font-weight: bold;
-      color: #fff;
-      text-align: center;
-    }
-    .city-card .conditions {
-      font-size: 0.85em;
-      color: #ccc;
-      text-align: center;
-      text-transform: capitalize;
-      margin-top: 4px;
-    }
-    .city-card .wind {
-      font-size: 0.8em;
-      color: #999;
-      text-align: center;
-      margin-top: 4px;
-      margin-bottom: 12px;
-    }
-
-    /* FORECAST INSIDE CITY CARD */
-    .forecast-divider {
-      border-top: 1px solid #cc0000;
-      margin: 10px 0;
-    }
+    .city-card .temp { font-size: 2.4em; font-weight: bold; color: #fff; text-align: center; }
+    .city-card .conditions { font-size: 0.85em; color: #ccc; text-align: center; text-transform: capitalize; margin-top: 4px; }
+    .city-card .wind { font-size: 0.8em; color: #999; text-align: center; margin-top: 4px; margin-bottom: 12px; }
+    .forecast-divider { border-top: 1px solid #cc0000; margin: 10px 0; }
     .forecast-day {
       display: flex;
       justify-content: space-between;
@@ -115,9 +79,8 @@
     .forecast-day:last-child { border-bottom: none; }
     .forecast-day .day-label { color: #cc0000; font-weight: bold; min-width: 36px; }
     .forecast-day .day-temps { color: #fff; }
-    .forecast-day .day-cond { color: #ccc; text-transform: capitalize; flex: 1; text-align: center; font-size: 0.9em; }
+    .forecast-day .day-cond { color: #ccc; text-transform: capitalize; flex: 1; text-align: center; }
     .forecast-day .day-precip { color: #7ec8e3; min-width: 30px; text-align: right; }
-
     .timestamp { text-align: center; color: #555; font-size: 0.75em; margin-top: 20px; }
     .loading { color: #666; font-style: italic; text-align: center; padding: 20px; }
   </style>
@@ -125,8 +88,6 @@
 <body>
 
 <div class="dashboard">
-
-  <!-- LEFT COLUMN -->
   <div class="left-col">
     <div class="logo-box">
       <img src="https://raw.githubusercontent.com/npr8v94pt2-bit/ballys-dashboard/main/BALY.png" alt="Bally's Logo">
@@ -135,12 +96,9 @@
       <div class="loading">Loading...</div>
     </div>
   </div>
-
-  <!-- RIGHT COLUMN - 6 CITY CARDS -->
   <div class="right-col" id="city-grid">
     <div class="loading">Loading weather...</div>
   </div>
-
 </div>
 
 <div class="timestamp" id="timestamp"></div>
@@ -165,13 +123,17 @@
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(sheetName)}?key=${API_KEY}`;
     const res = await fetch(url);
     const data = await res.json();
+    console.log(`--- ${sheetName} raw data:`, data);
     if (!data.values || data.values.length < 2) return [];
     const headers = data.values[0];
-    return data.values.slice(1).map(row => {
+    console.log(`--- ${sheetName} headers:`, headers);
+    const rows = data.values.slice(1).map(row => {
       const obj = {};
       headers.forEach((h, i) => obj[h] = row[i] || "");
       return obj;
     });
+    console.log(`--- ${sheetName} first row:`, rows[0]);
+    return rows;
   }
 
   function getLatest(rows, keyField) {
@@ -193,7 +155,9 @@
     const weatherMap = getLatest(weatherRows, "City");
     const forecastMap = getLatest(forecastRows, "City");
 
-    // Remap city names
+    console.log("Weather map keys:", Object.keys(weatherMap));
+    console.log("Forecast map keys:", Object.keys(forecastMap));
+
     const remappedWeather = {};
     Object.keys(weatherMap).forEach(k => {
       remappedWeather[mapCityName(k)] = weatherMap[k];
@@ -204,11 +168,15 @@
       remappedForecast[mapCityName(k)] = forecastMap[k];
     });
 
-    // BUILD CITY CARDS
+    console.log("Remapped weather keys:", Object.keys(remappedWeather));
+    console.log("Remapped forecast keys:", Object.keys(remappedForecast));
+
     const grid = document.getElementById("city-grid");
     grid.innerHTML = CITY_ORDER.map(city => {
       const w = remappedWeather[city] || {};
       const f = remappedForecast[city] || {};
+
+      console.log(`City: ${city}, weather:`, w, "forecast:", f);
 
       const temp = w["Temp"] ? Math.round(parseFloat(w["Temp"])) + "°F" : "--";
       const cond = w["Conditions"] || "--";
@@ -239,7 +207,6 @@
       </div>`;
     }).join("");
 
-    // BUILD STOCK BOX
     const stockBox = document.getElementById("stock-box");
     const stockMap = getLatest(stockRows, "symbol");
     const stock = Object.values(stockMap)[0];
