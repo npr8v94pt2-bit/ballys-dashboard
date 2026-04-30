@@ -77,7 +77,7 @@
       font-size: 0.78em;
     }
     .forecast-day:last-child { border-bottom: none; }
-    .forecast-day .day-label { color: #cc0000; font-weight: bold; min-width: 36px; }
+    .forecast-day .day-label { color: #cc0000; font-weight: bold; min-width: 45px; }
     .forecast-day .day-temps { color: #fff; }
     .forecast-day .day-cond { color: #ccc; text-transform: capitalize; flex: 1; text-align: center; }
     .forecast-day .day-precip { color: #7ec8e3; min-width: 30px; text-align: right; }
@@ -117,6 +117,19 @@
 
   function mapCityName(name) {
     return WEATHER_CITY_MAP[name] || name;
+  }
+
+  function getDayLabels() {
+    const labels = [];
+    const today = new Date();
+    for (let i = 0; i < 5; i++) {
+      const d = new Date(today);
+      d.setDate(today.getDate() + i);
+      const month = d.getMonth() + 1;
+      const day = d.getDate();
+      labels.push(`${month}/${day}`);
+    }
+    return labels;
   }
 
   async function fetchSheet(sheetName) {
@@ -161,6 +174,8 @@
       remappedForecast[mapCityName(k)] = forecastMap[k];
     });
 
+    const dayLabels = getDayLabels();
+
     const grid = document.getElementById("city-grid");
     grid.innerHTML = CITY_ORDER.map(city => {
       const w = remappedWeather[city] || {};
@@ -178,7 +193,7 @@
         const prec = f[`Day${d} Precip`] !== undefined && f[`Day${d} Precip`] !== ""
                      ? Math.round(parseFloat(f[`Day${d} Precip`])) + "mm" : "--";
         forecastHtml += `<div class="forecast-day">
-          <span class="day-label">D${d}</span>
+          <span class="day-label">${dayLabels[d - 1]}</span>
           <span class="day-temps">${high}/${low}</span>
           <span class="day-cond">${dc}</span>
           <span class="day-precip">${prec}</span>
